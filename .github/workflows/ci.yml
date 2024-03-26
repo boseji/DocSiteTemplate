@@ -1,0 +1,33 @@
+name: ci
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+permissions:
+  contents: write
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/checkout@v4
+        with:
+          # Repository name with owner. For example, actions/checkout
+          # Default: ${{ github.repository }}
+          #
+          # Here, we need URI of actual Document repository location.
+          # This is typically from the same user's public repository.
+          repository: "boseji/DocsTemplate"
+          path: "act"
+      - uses: actions/setup-python@v4
+        with:
+          python-version: 3.x
+      - uses: actions/cache@v3
+        with:
+          key: ${{ github.ref }}
+          path: .cache
+      - run: pip install mkdocs-material
+      - run: pip install pillow cairosvg mkdocs-minify-plugin
+      - run: pip install mkdocs-no-sitemap-plugin
+      - run: mkdocs gh-deploy --force
